@@ -58,11 +58,11 @@ public class Usuario {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Usuario{nombre=").append(nombre);
-        sb.append(", apellido=").append(apellido);
-        sb.append(", userName=").append(userName);
-        sb.append(", password=").append(password);
-        sb.append(", id=").append(id);
+        sb.append("{nombre:").append("\""+nombre+"\"");
+        sb.append(", apellido:").append("\""+apellido+"\"");
+        sb.append(", userName:").append("\""+userName+"\"");
+        sb.append(", password:").append("\""+password+"\"");
+        sb.append(", id:").append("\""+id+"\"");
         sb.append('}');
         return sb.toString();
     }

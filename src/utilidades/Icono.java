@@ -1,15 +1,10 @@
 package utilidades;
 
-import clases.*;
+
 import java.awt.Graphics;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-/**
- *
- * @author Somos Programadores
- * Facebook https://web.facebook.com/developers08062019
- */
 
 public class Icono extends javax.swing.JLabel {
     int x, y;

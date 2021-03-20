@@ -1,12 +1,6 @@
 package utilidades;
 
-import clases.*;
 
-/**
- *
- * @author Somos Programadores Facebook
- * https://web.facebook.com/developers08062019
- */
 public class usuario {
 
     private int usuario_id;

@@ -1,6 +1,6 @@
 package utilidades;
 
-import clases.*;
+
 import java.security.MessageDigest;
 import java.util.Arrays;
 import javax.crypto.Cipher;
@@ -15,7 +15,7 @@ import org.apache.commons.codec.binary.Base64;
  * Facebook https://web.facebook.com/developers08062019
  */
 public class encoder {
-         String secretKey = "SomosProgramadores";
+         String secretKey = "RodCodeDev";
     
         public String ecnode(String cadena) {
         String encriptacion = "";

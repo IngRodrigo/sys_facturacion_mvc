@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import utilidades.Utilidades;
 
 public class Conexion {
 
@@ -51,6 +52,7 @@ public class Conexion {
 
         } catch (Exception e) {
             System.err.println("Exception en la consulta " + e);
+            Utilidades.EscribirLog("ERROR", "Al relizar la consulta se produjo: "+e);
             closeConexion();
         }
         return rs;

@@ -19,7 +19,8 @@ import javax.swing.table.DefaultTableModel;
  * @author rodrigo_dev
  */
 public class Utilidades {
-        public static void EscribirLog(String tipo, String mensaje) {
+
+    public static void EscribirLog(String tipo, String mensaje) {
         BufferedWriter bw = null;
         FileWriter fw = null;
 
@@ -33,7 +34,7 @@ public class Utilidades {
                 }
             }
             String data = "Resultado: " + tipo + " Detalle: " + mensaje + "\n";
-            File file = new File(directorio,"log_" + Utilidades.fechaActual() + ".txt");
+            File file = new File(directorio, "log_" + Utilidades.fechaActual() + ".txt");
 
             if (!file.exists()) {
                 file.createNewFile();
@@ -61,8 +62,8 @@ public class Utilidades {
             }
         }
     }
-        
-           public static String fechaActual() {
+
+    public static String fechaActual() {
         String fecha = "";
         Calendar calendario = Calendar.getInstance();
 
@@ -78,8 +79,9 @@ public class Utilidades {
 
         return fecha;
     }
-   //Nombre del día de la semana 
-               public static String diaDeSemana(int dia) {
+    //Nombre del día de la semana 
+
+    public static String diaDeSemana(int dia) {
         String dia_de_la_semana = "";
         switch (dia) {
             case 1:
@@ -107,6 +109,24 @@ public class Utilidades {
 
         return dia_de_la_semana;
     }
+
+    public static String fechaActualParaTitulos() {
+        String fecha = "";
+        Calendar calendario = Calendar.getInstance();
+
+        int dia = calendario.get(Calendar.DAY_OF_MONTH);
+        int mes = calendario.get(Calendar.MONTH) + 1;
+        int anio = calendario.get(Calendar.YEAR);
+
+        String hora = String.format("%02d", calendario.get(Calendar.HOUR_OF_DAY));
+        String minuto = String.format("%02d", calendario.get(Calendar.MINUTE));
+        String segundo = String.format("%02d", calendario.get(Calendar.SECOND));
+
+        //fecha = anio + "-" + mes + "-" + dia + "-" + hora + "-" + minuto;
+        fecha= dia+ "/"+mes+"/"+anio+" "+hora+":"+minuto;
+        return fecha;
+    }
+
     public static void cargarTabla(ResultSet resultado, JTable tabla, String tablaBd) {
         DefaultTableModel modelo = new DefaultTableModel();
 
@@ -116,7 +136,6 @@ public class Utilidades {
             modelo.addColumn("USUARIO");
             modelo.addColumn("CORREO");
             modelo.addColumn("MODIFICADO");
-            
 
             tabla.setModel(modelo);
 
@@ -125,11 +144,11 @@ public class Utilidades {
                 String[] registros = new String[6];
                 while (resultado.next()) {
                     registros[0] = resultado.getString("idUsuario");
-                    registros[1] = resultado.getString("nombre")+" "+resultado.getString("apellido");
+                    registros[1] = resultado.getString("nombre") + " " + resultado.getString("apellido");
                     registros[2] = resultado.getString("user");
                     registros[3] = resultado.getString("email");
                     registros[4] = resultado.getString("update_at");
-                 
+
                     modelo.addRow(registros);
                 }
                 tabla.setModel(modelo);

@@ -1,14 +1,10 @@
 package utilidades;
 
-import clases.*;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- *
- * @author Somos Programadores Facebook
- * https://web.facebook.com/developers08062019
- */
+
 public class Validaciones {
     
      public boolean ValidarEmail(String email) {
