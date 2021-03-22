@@ -170,7 +170,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JLabel _fecha_menu_principal;
-    private javax.swing.JMenuItem _menu_btn_salir;
+    public javax.swing.JMenuItem _menu_btn_salir;
     public javax.swing.JMenuItem _menu_herramientas_configuraciones_ciudades;
     public javax.swing.JMenuItem _menu_usuarios_operaciones;
     public javax.swing.JDesktopPane escritorio;

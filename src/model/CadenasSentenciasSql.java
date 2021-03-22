@@ -8,8 +8,11 @@ public class CadenasSentenciasSql {
      * @param usuario
      */
     public static String insertarUsuario(Usuario usuario) {
-        String sql = "insert into ";
-        return sql;
+        if(usuario!=null){
+            String sql = "insert into seg_usuarios (nombre, apellido, userName, userPassword, W)";
+            return sql;
+        }
+        return null;
     }
 
     public static String getUsuarios() {
@@ -56,13 +59,23 @@ public class CadenasSentenciasSql {
                 + "INNER JOIN seg_grupo_usuario as gu on u.id=gu.id_usuario\n"
                 + "INNER JOIN ciudades as c on u.idCiudad=c.id\n"
                 + "INNER join paises as p on u.idPais=p.id\n"
-                + "WHERE u.userName='"+usuario+"' and u.userPassword='"+password+"'";
+                + "WHERE u.userName='" + usuario + "' and u.userPassword='" + password + "'";
         return sql;
     }
 
     /*Ciudades*/
     public static String TodasLasCiudades() {
         String sql = "select * from ciudades";
+        return sql;
+    }
+
+    public static String TodosLosPaises() {
+        String sql = "Select * from paises";
+        return sql;
+    }
+
+    public static String TodosLosTipos() {
+        String sql="Select * from seg_grupos";
         return sql;
     }
 

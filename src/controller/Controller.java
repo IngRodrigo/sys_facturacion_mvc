@@ -1,5 +1,6 @@
 package controller;
 
+import com.toedter.calendar.JDateChooser;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
@@ -22,35 +24,40 @@ import view.CiudadesView;
 import view.MenuPrincipal;
 import view.UsuariosOperaciones;
 
-public final class Controller implements ActionListener, MouseListener{
+public final class Controller implements ActionListener, MouseListener {
+
     private ResultSet resulset;
     UsuariosOperaciones vistaUsuario = new UsuariosOperaciones();
     MenuPrincipal vistaMenu = new MenuPrincipal();
     CiudadesView vistaCiudades = new CiudadesView();
-    
-    /** Login **/
+
+    /**
+     * Login *
+     */
     AccesoView vistaAcceso = new AccesoView();
     /**
-     Modelos
-     **/
-    
+     * Modelos
+     *
+     */
+
     Conexion conexion = new Conexion();
-    
+
     /*Objeto usuario*/
-    Usuario usuarioLogueado= new Usuario();
+    Usuario usuarioLogueado = new Usuario();
+
     public Controller() {
         iniciarSistema();
         listenner();
     }
 
     public void iniciarSistema() {
-/*      vistaMenu.setTitle("Sistema");
+        /*      vistaMenu.setTitle("Sistema");
         vistaMenu.setExtendedState(Frame.MAXIMIZED_BOTH);
         vistaMenu.setVisible(true);*/
         try {
-            cargarComnos("Usuarios", vistaAcceso._acceso_nombre_usuario);
+            cargarComnos("login", vistaAcceso._acceso_nombre_usuario);
         } catch (Exception e) {
-            Utilidades.EscribirLog("ERROR", "Al intentar traer lista de usuarios se produjo la exepción: "+e);
+            Utilidades.EscribirLog("ERROR", "Al intentar traer lista de usuarios se produjo la exepción: " + e);
         }
         vistaAcceso.setTitle("Acceso al sistema");
         vistaAcceso.setLocationRelativeTo(null);
@@ -59,35 +66,38 @@ public final class Controller implements ActionListener, MouseListener{
 
     private void listenner() {
         vistaAcceso._acceso_btn_acceder.addActionListener(this);
+
         vistaMenu._menu_usuarios_operaciones.addActionListener(this);
         vistaMenu._menu_herramientas_configuraciones_ciudades.addActionListener(this);
+        vistaMenu._menu_btn_salir.addActionListener(this);
+
         vistaUsuario._usuario_btn_guardar.addActionListener(this);
         vistaCiudades._ciudades_btn_guardar.addActionListener(this);
-        
+
     }
- 
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==vistaAcceso._acceso_btn_acceder){
-            String usuario=vistaAcceso._acceso_nombre_usuario.getSelectedItem().toString();
-            String password=vistaAcceso._acceso_contrasena.getText();
-            
-            if(usuario.isEmpty()){
+        if (e.getSource() == vistaAcceso._acceso_btn_acceder) {
+            String usuario = vistaAcceso._acceso_nombre_usuario.getSelectedItem().toString();
+            String password = vistaAcceso._acceso_contrasena.getText();
+
+            if (usuario.isEmpty()) {
                 mensajeValidacion("El nombre de usuario no puede estar vacio");
             }
-            if(password.isEmpty()){
+            if (password.isEmpty()) {
                 mensajeValidacion("El campo contraseña no puede estar vacio");
             }
-            
-            if(comprobarUsuario(usuario, password)){
-               vistaAcceso.setVisible(false);
-               irAlMenuPrincipal();
+
+            if (comprobarUsuario(usuario, password)) {
+                vistaAcceso.setVisible(false);
+                irAlMenuPrincipal();
             }
         }
-        
+
         if (e.getSource() == vistaMenu._menu_usuarios_operaciones) {
-            cargarComnos("Usuarios", vistaUsuario._usuario_combo_ciudades);
-            resulset=conexion.consultaSelect(CadenasSentenciasSql.getUsuarios());
+            cargarComnos("Operaciones Usuario", vistaUsuario._usuario_combo_ciudades);
+            resulset = conexion.consultaSelect(CadenasSentenciasSql.getUsuarios());
             utilidades.Utilidades.cargarTabla(resulset, vistaUsuario._usuario_tabla, "usuarios");
             conexion.closeConexion();
             controlarAperturaVentanas(vistaUsuario, "Usuarios");
@@ -96,18 +106,22 @@ public final class Controller implements ActionListener, MouseListener{
         if (e.getSource() == vistaMenu._menu_herramientas_configuraciones_ciudades) {
             vistaCiudades.setClosable(true);
             try {
-                resulset=conexion.consultaSelect("select * from ciudades");
+                resulset = conexion.consultaSelect("select * from ciudades");
                 utilidades.Utilidades.cargarTabla(resulset, vistaCiudades._ciudades_tabla, "ciudades");
                 conexion.closeConexion();
             } catch (Exception esql) {
-                System.out.println("Error al intentar traer ciudades: "+esql);
+                System.out.println("Error al intentar traer ciudades: " + esql);
                 conexion.closeConexion();
             }
             controlarAperturaVentanas(vistaCiudades, "Ciudades");
         }
+        if (e.getSource() == vistaMenu._menu_btn_salir) {
+            salirDelSistema();
+        }
         if (e.getSource() == vistaCiudades._ciudades_btn_guardar) {
             System.out.println("Insertar ciudad");
         }
+
         /*
             OPERACIONES FORMULARIO USUARIOS
         **/
@@ -142,20 +156,44 @@ public final class Controller implements ActionListener, MouseListener{
 
     private void cargarComnos(String formulario, JComboBox combo) {
 
-        if (formulario.equals("Ciudades")) {
-            String sql = "select * from ciudades";
-            this.resulset = conexion.consultaSelect(sql);
-            combo.removeAllItems();
+        if (formulario.equals("Operaciones Usuario")) {
+            String ciudad = CadenasSentenciasSql.TodasLasCiudades();
+            this.resulset = conexion.consultaSelect(ciudad);
+            vistaUsuario._usuario_combo_ciudades.removeAllItems();
             try {
                 while (resulset.next()) {
-                    combo.addItem(resulset.getString("descripcion"));
+                    vistaUsuario._usuario_combo_ciudades.addItem(resulset.getString("descripcion"));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            conexion.closeConexion();
+
+            String pais = CadenasSentenciasSql.TodosLosPaises();
+            this.resulset = conexion.consultaSelect(pais);
+            vistaUsuario._usuario_combo_paises.removeAllItems();
+            try {
+                while (resulset.next()) {
+                    vistaUsuario._usuario_combo_paises.addItem(resulset.getString("descripcion"));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            conexion.closeConexion();
+
+            String tipo_usuario = CadenasSentenciasSql.TodosLosTipos();
+            this.resulset = conexion.consultaSelect(tipo_usuario);
+            vistaUsuario._usuario_combo_tipo.removeAllItems();
+            try {
+                while (resulset.next()) {
+                    vistaUsuario._usuario_combo_tipo.addItem(resulset.getString("descripcion"));
                 }
             } catch (SQLException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
             conexion.closeConexion();
         }
-        if (formulario.equals("Usuarios")) {
+        if (formulario.equals("login")) {
             String sql = CadenasSentenciasSql.getUsuarios();
             this.resulset = conexion.consultaSelect(sql);
             combo.removeAllItems();
@@ -171,33 +209,34 @@ public final class Controller implements ActionListener, MouseListener{
     }
 
     private void validarDatosUsuario() {
-        Usuario usuario = new Usuario();
+        //  Usuario usuario = new Usuario();
         try {
-            if (comprobarCamposVacios(vistaUsuario._usuarios_txt_nombre)) {
+            /* if (comprobarCamposVacios(vistaUsuario._usuarios_txt_nombre)) {
                 mensajeValidacion("El campo nombre no puede estar vacio");
             } else {
                 usuario.setNombre(vistaUsuario._usuarios_txt_nombre.getText());
             }
             if (comprobarCamposVacios(vistaUsuario._usuario_txt_apellido)) {
-                JOptionPane.showMessageDialog(null, "El campo apellido no puede estar vacio");
+                mensajeValidacion("El campo apellido no puede estar vacio");
             } else {
                 usuario.setApellido(vistaUsuario._usuario_txt_apellido.getText());
             }
             if (comprobarCamposVacios(vistaUsuario._usuario_txt_user_name)) {
-                JOptionPane.showMessageDialog(null, "El campo nombre de usuario no puede estar vacio");
+                mensajeValidacion("El campo nombre de usuario no puede estar vacio");
             } else {
                 usuario.setUserName(vistaUsuario._usuario_txt_user_name.getText());
             }
             if (comprobarCamposVacios(vistaUsuario._usuario_txt_password) && comprobarCamposVacios(vistaUsuario._usuario_txt_rep_password)) {
-                JOptionPane.showMessageDialog(null, "El campo contraseña no puede estar vacio");
+                mensajeValidacion("El campo contraseña no puede estar vacio");
             } else {
                 if (vistaUsuario._usuario_txt_password.getText().equals(vistaUsuario._usuario_txt_rep_password.getText())) {
                     usuario.setPassword(vistaUsuario._usuario_txt_password.getText());
                     insertarNuevoUsuario(usuario);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Las contraseñas no son iguales");
+                    mensajeValidacion("Las contraseñas no son iguales");
                 }
-            }
+            }*/
+            String fechaNacimiento = getFechaView(vistaUsuario._usuarios_date);
 
         } catch (Exception e) {
             System.out.println("Error al guardar: " + e);
@@ -216,7 +255,7 @@ public final class Controller implements ActionListener, MouseListener{
 
     private void insertarNuevoUsuario(Usuario usuario) {
         try {
-             
+
         } catch (Exception e) {
         }
     }
@@ -228,22 +267,22 @@ public final class Controller implements ActionListener, MouseListener{
 
     @Override
     public void mousePressed(MouseEvent me) {
-        
+
     }
 
     @Override
     public void mouseReleased(MouseEvent me) {
-        
+
     }
 
     @Override
     public void mouseEntered(MouseEvent me) {
-        
+
     }
 
     @Override
     public void mouseExited(MouseEvent me) {
-        
+
     }
 
     private void mensajeValidacion(String mensaje) {
@@ -251,40 +290,53 @@ public final class Controller implements ActionListener, MouseListener{
     }
 
     private boolean comprobarUsuario(String usuario, String password) {
-       String sql=CadenasSentenciasSql.getUsuario(usuario, password);
-       boolean response=false;
+        String sql = CadenasSentenciasSql.getUsuario(usuario, password);
+        boolean response = false;
         try {
-            this.resulset=conexion.consultaSelect(sql);
-            while (this.resulset.next()) {                
+            this.resulset = conexion.consultaSelect(sql);
+            while (this.resulset.next()) {
                 this.usuarioLogueado.setId(this.resulset.getInt("idUsuario"));
                 this.usuarioLogueado.setNombre(this.resulset.getString("nombre"));
                 this.usuarioLogueado.setApellido(this.resulset.getString("apellido"));
                 this.usuarioLogueado.setUserName(this.resulset.getString("user"));
             }
             System.out.println("Usuario logueado = " + this.usuarioLogueado.toString());
-            Utilidades.EscribirLog("OK", "Usuario logueado: "+this.usuarioLogueado.toString());
-            response=true;
+            Utilidades.EscribirLog("OK", "Usuario logueado: " + this.usuarioLogueado.toString());
+            response = true;
             return response;
         } catch (Exception e) {
-            System.out.println("Al intentar comprobar los datos del usuario se produjo: "+e);
-            Utilidades.EscribirLog("ERROR", "Al intentar comprobar los datos del usuario se produjo: "+e);
-            response=false;
+            System.out.println("Al intentar comprobar los datos del usuario se produjo: " + e);
+            Utilidades.EscribirLog("ERROR", "Al intentar comprobar los datos del usuario se produjo: " + e);
+            response = false;
         }
         return response;
     }
 
     private void irAlMenuPrincipal() {
-       abrirVentana(vistaMenu, "Principal");
+        abrirVentana(vistaMenu, "Principal");
     }
 
     private void abrirVentana(Frame ventana, String titulo) {
-      ventana.setTitle(titulo);
-      if(titulo.equals("Principal")){
-          ventana.setExtendedState(Frame.MAXIMIZED_BOTH);
-          vistaMenu._fecha_menu_principal.setText(Utilidades.fechaActualParaTitulos());
-      }
-      ventana.setVisible(true);
+        ventana.setTitle(titulo);
+        if (titulo.equals("Principal")) {
+            ventana.setExtendedState(Frame.MAXIMIZED_BOTH);
+            vistaMenu._fecha_menu_principal.setText(Utilidades.fechaActualParaTitulos());
+        }
+        ventana.setVisible(true);
     }
 
- 
+    private void salirDelSistema() {
+
+    }
+
+    private String getFechaView(JDateChooser date) {
+        SimpleDateFormat Formato = new SimpleDateFormat("yyyy-MM-dd");
+        if (date.getDate() != null) {
+           // System.out.println(Formato.format(date.getDate()));
+            return Formato.format(date.getDate());
+        } else {
+            return null;
+        }
+    }
+
 }
