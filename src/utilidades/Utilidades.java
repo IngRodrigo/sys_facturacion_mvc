@@ -11,8 +11,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.util.Calendar;
+import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import model.datos.CiudadDAO;
+import model.domain.Ciudad;
 
 /**
  *
@@ -123,7 +126,7 @@ public class Utilidades {
         String segundo = String.format("%02d", calendario.get(Calendar.SECOND));
 
         //fecha = anio + "-" + mes + "-" + dia + "-" + hora + "-" + minuto;
-        fecha= dia+ "/"+mes+"/"+anio+" "+hora+":"+minuto;
+        fecha = dia + "/" + mes + "/" + anio + " " + hora + ":" + minuto;
         return fecha;
     }
 
@@ -179,5 +182,21 @@ public class Utilidades {
             }
         }
 
+    }
+
+    public static void cargarTabla(JTable tabla, String tablaBd) {
+        DefaultTableModel modelo = new DefaultTableModel();
+        if (tablaBd.equals("Ciudades")) {
+            List<Ciudad> ciudades = CiudadDAO.getCiudades();
+            modelo.addColumn("CODIGO");
+            modelo.addColumn("CIUDAD");
+            String[] registros = new String[3];
+            for (Ciudad item : ciudades) {
+                registros[0] = String.valueOf(item.getId());
+                registros[1] = String.valueOf(item.getDescripcion());
+                modelo.addRow(registros);
+            }
+            tabla.setModel(modelo);
+        }
     }
 }

@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import model.Conexion;
 import model.CadenasSentenciasSql;
 import model.Usuario;
+import model.domain.Ciudad;
 import utilidades.Utilidades;
 import view.AccesoView;
 import view.CiudadesView;
@@ -58,6 +59,7 @@ public final class Controller implements ActionListener, MouseListener {
             cargarComnos("login", vistaAcceso._acceso_nombre_usuario);
         } catch (Exception e) {
             Utilidades.EscribirLog("ERROR", "Al intentar traer lista de usuarios se produjo la exepción: " + e);
+            mensajeValidacion("No se pudo establecer conexión con la base de datos");
         }
         vistaAcceso.setTitle("Acceso al sistema");
         vistaAcceso.setLocationRelativeTo(null);
@@ -105,14 +107,16 @@ public final class Controller implements ActionListener, MouseListener {
 
         if (e.getSource() == vistaMenu._menu_herramientas_configuraciones_ciudades) {
             vistaCiudades.setClosable(true);
-            try {
+            Utilidades.cargarTabla(vistaCiudades._ciudades_tabla, "Ciudades");
+          /*  try {
                 resulset = conexion.consultaSelect("select * from ciudades");
                 utilidades.Utilidades.cargarTabla(resulset, vistaCiudades._ciudades_tabla, "ciudades");
                 conexion.closeConexion();
             } catch (Exception esql) {
                 System.out.println("Error al intentar traer ciudades: " + esql);
                 conexion.closeConexion();
-            }
+            }*/
+          
             controlarAperturaVentanas(vistaCiudades, "Ciudades");
         }
         if (e.getSource() == vistaMenu._menu_btn_salir) {
@@ -326,7 +330,7 @@ public final class Controller implements ActionListener, MouseListener {
     }
 
     private void salirDelSistema() {
-
+       mensajeConfirmacion("Estas seguro que desea salir del sistema");
     }
 
     private String getFechaView(JDateChooser date) {
@@ -339,4 +343,11 @@ public final class Controller implements ActionListener, MouseListener {
         }
     }
 
+    private void mensajeConfirmacion(String mensaje) {
+        int respuesta=JOptionPane.showConfirmDialog(null, mensaje);
+        //System.out.println("respuesta = " + respuesta);
+        if(respuesta==0){
+            System.exit(0);
+        }
+    }
 }

@@ -14,7 +14,8 @@ public class Conexion {
     private final String userD = "root";
     private final String passwordD = "";
     //private final String urlD = "jdbc:mysql://192.168.10.99/" + baseD;
-    private final String urlD = "jdbc:mysql://localhost/" + baseD;
+   // private final String urlD = "jdbc:mysql://localhost/" + baseD;
+    private final String urlD ="jdbc:mysql://localhost:3306/"+baseD+"?useSSL=false&useTimezone=true&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private Connection con = null;
 
     private PreparedStatement ps;
